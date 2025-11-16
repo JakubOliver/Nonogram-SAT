@@ -1,30 +1,10 @@
 # Nonogram-SAT
 
-## Poznámky
-VELKE TODO: najit lepsi způsob na encoding než najít DNF a prehodit 
+# Jak spustit?
 
-moznost: najit vsechny modely pro kazdy sloupec a radek a potom jednotlive udělat antimodely a z toho dostaneme CNF pro řádky a sloupce a z toho dokážeme po andování udělat CNF pro celou matici
+Script jde spustit z kořenového adresáře gitového repositáře pomocí příkazu `./main.py [vstupní soubor]`, kde `[vstupní soubor]` představuje zakódovaný Nonogram problém dle popisu níže. 
 
-jazyk: vsechna policka
-
-1. sloupec:
-```
-3
-big or 0...n-3
-    p_i and p_{i+1} and p_{i+2}
-    
-potom DNF do CNF 
-a and přes všechny sloupce a řádky
-```
-
-1. řádek:
-```
-2 2
-big or 0...n-(2 + 1 + 2)
-    p_i and p_{i+1} and (
-        big or i+2...n-2
-            p_j and p_{j+1}
-```
+Několik vzorových je možné najít v složce `examples`.
 
 # Zakódování problému
 
@@ -92,11 +72,17 @@ Dalším aspektem je fakt, že celá hrací plocha má rozměry $n \times n$, al
 
 # Příklady
 
-## Small nonogram
+V této sekci jsou připraveny 4 vzorové Nonogramy, 1 menší splnitelný, 1 menší nesplnitelný a 2 větší splnitelné. 
+
+Několik dalších spíše menších můžete naleznout ve složce `examples`. Složka obsahuje i soubor `tooBig.txt`, tedy popis poměrně velmi velkého Nonogramu, který běží v netriviálně dlouhém čase. 
+
+## Malý Nonogram
+
+Malý Nonogram o velikosti $5 \times 5$.
 
 ![Small nonogram](./src/tiny_nonogram.PNG)
 
-### Encoding
+### Zakódování
 
 ```
 5
@@ -111,11 +97,35 @@ Dalším aspektem je fakt, že celá hrací plocha má rozměry $n \times n$, al
 3
 ```
 
-## Normal nonogram
+## Nesplnitelný Nonogram
+
+Nesplnitelný malý Nonogram o velikosti $5 \times 5$. 
+
+Pozn: jedná se o stejný Nonogram jako předešlý příklad, pouze byla pozměněna charakteristika prvního řádku.
+
+```
+5
+2
+4
+3 1
+4
+2
+1 1 2
+5
+3
+1 1
+3
+```
+
+## Větší Nonogram
+
+Větší Nonogram o velikosti $10 \times 10$.
+
+čas: ~1.6s
 
 ![Normal nonogram](./src/small_nonogram.PNG)
 
-### Encoding
+### Zakódování
 ```
 10
 3
@@ -140,42 +150,40 @@ Dalším aspektem je fakt, že celá hrací plocha má rozměry $n \times n$, al
 8
 ```
 
-time: ~1.6 seconds
+## Velký Nonogram
 
-## Big nonogram
+Velký Nonogram o velikosti $12 \times 12$.
 
-![Big nonogram](./src/big_nonogram.PNG)
+čas: ~30s
+
+![Big nonogram](./src/12x12.png)
+
+### Zakódování
 
 ```
-15
-1 1
-8
-3 1
-4 2 1
-7 2 1
-1 4 2 1
-4 1
-1 2 4
-2 1 4
-3 2 1
-4 1 2 1
-1 1 2 2 1
-1 1 1 1
-8
-1 1 1
-1
-2
-1
-2 2
-1 2
-9
-5 1 1 1
-7 1 1 1
-15
-1 1
-1 3 2 1
-1 3 2 2 1
-1 2 1
-1 2 1
-15
+12
+12
+1 4
+1 6
+1 7
+1 6
+1 1 5
+1 3 4
+6 3
+7 2
+8 1
+9 2 
+12 
+12 
+1 5
+1 6
+1 7
+1 6
+1 1 5
+1 3 4
+1 4 3
+7 2
+8 1
+9 2
+12
 ```
