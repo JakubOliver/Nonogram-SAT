@@ -131,6 +131,7 @@ def print_result(result, problem):
 
     if (result.returncode == 20):
         print("NEMÁ ŘEŠENÍ")
+        return
 
     model = []
     for line in result.stdout.decode('utf-8').split('\n'):
