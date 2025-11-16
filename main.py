@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import subprocess
 
 def load_problem(filename: str) -> list:
     with open(filename, "r", encoding="utf-8") as file:
@@ -63,14 +64,14 @@ def generate_cnf(dnf: list, n: int, start: int, row: bool) -> list:
     for i in range(m - 1, -1, -1):
         model_number[i] = model_into_number(dnf[i])
 
-    print(model_number)
+    #print(model_number)
 
     idx = 0
 
     with open("./output/cnf.txt", "a", encoding="utf-8") as file:
         for i in range(1<<n):
             if i in model_number:
-                print(i)
+                #print(i)
                 continue
 
             #cnf.append(number_into_model(i, n))
@@ -97,7 +98,7 @@ def encode_to_dnf_recur(params: list, idx: int, start: int, n: int, all_models: 
         for j in range(i, i + params[idx]):
             active[j] = False
 
-def encode(problem: list) -> list:
+def encode(problem: list) -> None:
     cnf = []
     n = len(problem) // 2
 
@@ -117,15 +118,42 @@ def encode(problem: list) -> list:
         else:
             cnf.append(generate_cnf(all_models, n, (i-n)*n, True))
 
-        print(all_models)
+        #print(all_models)
 
-    return cnf
+def call_glucose():
+    return subprocess.run(["./glucose-simp", "-model", "./output/cnf.txt"], stdout=subprocess.PIPE)
+
+def print_result(result, problem):
+    n = len(problem) // 2
+
+    for line in result.stdout.decode('utf-8').split("\n"):
+        print(line)
+
+    if (result.returncode == 20):
+        print("NEMÁ ŘEŠENÍ")
+
+    model = []
+    for line in result.stdout.decode('utf-8').split('\n'):
+        if line.startswith("v"):    # there might be more lines of the model, each starting with 'v'
+            vars = line.split(" ")
+            vars.remove("v")
+            model.extend(int(v) for v in vars)      
+    model.remove(0) # 0 is the end of the model, just ignore it
+
+    for i in range(n):
+        for j in range(n):
+            if model[i*n + j] > 0:
+                print("#", end="")
+            else:
+                print(".", end="")
+        print("")
 
 def main():
     problem = load_problem(sys.argv[1])
 
-    print(problem)
-    cnf = encode(problem)
+    encode(problem)
+    result = call_glucose()
+    print_result(result, problem)
 
 if __name__ == "__main__":
     main()
