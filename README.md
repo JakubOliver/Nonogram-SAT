@@ -2,36 +2,40 @@
 
 # Jak spustit?
 
-Script jde spustit z kořenového adresáře gitového repositáře pomocí příkazu `./main.py [vstupní soubor]`, kde `[vstupní soubor]` představuje zakódovaný Nonogram problém dle popisu níže. 
+Script jde spustit z kořenového adresáře gitového repositáře pomocí příkazu `python main.py [vstupní soubor]`, kde `[vstupní soubor]` představuje zakódovaný Nonogram problém dle popisu níže. 
 
-Několik vzorových je možné najít v složce `examples`.
+Několik vzorových je možné najít v složce `examples`. 
+
+Pozn: připravená binárka pro SAT solver je kompilovaná pouze pro x86 architekturu. 
 
 # Zakódování problému
 
 ## Zakódování vstupu 
 
-Každý Nonogram představuje čtvercovou matici, hrací plochu, $n \times n$. A ke každému řádku příslušící požadavky na vyplnění, viz příklady níže. Pro správné vyřešení Nonogramu je potřebné u každého políčka vyhodnotit, zda bude obarvené či ne. 
+Každý Nonogram představuje čtvercovou matici, hrací plochu, $n \times n$. A ke každému řádku či sloupci přísluší požadavky na vyplnění, viz příklady níže. Pro správné vyřešení Nonogramu je potřebné u každého políčka vyhodnotit, zda bude obarvené či ne. 
 
 Nechť tedy hrací plocha představuje matici $A$, potom prvek $a_{ij}$ musí splňovat charakteristiku $i$-tého řádku a $j$-tého sloupce. 
 
 Ukažme si příklad komentovaného zakódování na příkladu.
 
-![Example](./src/tiny_nonogram.PNG)
+![Example](./src/small_nonogram.PNG)
 
 Tedy tento Nonogram velikost $5 \times 5$ bychom zakódovali následovně. Na prvním řádku se vždy objevuje informace o tom jaké má hrací plocha rozměry, díky tomu, že pracujeme s čtvercovými hracími poly, tak nám stačí uvést tuto hodnotu pouze jednou. 
 
-Po informaci o rozměru přichází výčet informací nejdříve o sloupcích, zleva doprava, a následně o řádcích, shora dolů. Jednotlivá ohodnocení sloupců a řádků jsou vypsány podle stejné konvence a jsou odděleny mezerami. 
+Po informaci o rozměru přichází výčet informací nejdříve o sloupcích, zleva doprava, a následně o řádcích, shora dolů. Jednotlivá ohodnocení sloupců a řádků jsou vypsány tak, že se začíná od hrací plochy směrem "ven", tedy u sloupců zdola nahoru a řádků zleva doprava.
 
 ```
 5
 2
 4
-3 1
-4 2
+1 3
+4
+2
 1 1 1
 5
 3 
 1 1
+3
 3
 ```
 
@@ -68,7 +72,7 @@ Druhým potenciálním řešením pro před do CNF je převod pomocí prováděn
 
 Tedy ve finální implementaci jsem využil prvního případu s určitými optimalizacemi jako využití zakódování modelů do čísel atd. 
 
-Dalším aspektem je fakt, že celá hrací plocha má rozměry $n \times n$, ale vždy zpracováváme jednotlivé řádky či sloupce jednotlivě a následně je spojujeme. Tedy výše popsané případy běží v nejhorším případě v asymptoticky exponenciálním čase vůči velikosti řádku, $n$, a ne velikosti matice $n \times n$.
+Dalším aspektem je fakt, že celá hrací plocha má rozměry $n \times n$, ale vždy zpracováváme jednotlivé řádky či sloupce jednotlivě a následně je spojujeme. Tedy výše popsané případy běží v nejhorším případě v asymptoticky exponenciálním čase vůči velikosti řádku, $n$, a ne velikosti matice $n \times n$. 
 
 # Příklady
 
@@ -80,19 +84,22 @@ Několik dalších spíše menších můžete naleznout ve složce `examples`. S
 
 Malý Nonogram o velikosti $5 \times 5$.
 
-![Small nonogram](./src/tiny_nonogram.PNG)
+![Small nonogram](./src/small_nonogram.PNG)
 
 ### Zakódování
+
+`examples\small.txt`
 
 ```
 5
 2
 4
-3 1
-4 2
+1 3
+4
+2
 1 1 1
 5
-3 
+3 2
 1 1
 3
 ```
@@ -103,11 +110,15 @@ Nesplnitelný malý Nonogram o velikosti $5 \times 5$.
 
 Pozn: jedná se o stejný Nonogram jako předešlý příklad, pouze byla pozměněna charakteristika prvního řádku.
 
+### Zakódování
+
+`examples\unsolvable.txt`
+
 ```
 5
 2
 4
-3 1
+1 3
 4
 2
 1 1 2
@@ -123,31 +134,35 @@ Větší Nonogram o velikosti $10 \times 10$.
 
 čas: ~1.6s
 
-![Normal nonogram](./src/small_nonogram.PNG)
+![Normal nonogram](./src/average_nonogram.PNG)
 
 ### Zakódování
+
+`examples/average.txt`
+
 ```
 10
 3
-2 1
-1 1 5
-1 8
-2 6
-3 4
-2 6
-1 8
-1 1 5
-2 3
+1 2
+5 1 1
+8 1
+6 2
+4 3
+6 2
+8 1
+5 1 1
+3 2
 2 2
 1 1 1 1
 1 5 1
 2 1 2
-5 
+5
 3 3
-1 8
-1 8
-1 8
+8 1
+8 1
+8 1
 8
+
 ```
 
 ## Velký Nonogram
@@ -156,34 +171,37 @@ Velký Nonogram o velikosti $12 \times 12$.
 
 čas: ~30s
 
-![Big nonogram](./src/12x12.png)
+![Big nonogram](./src/big_nonogram.png)
 
 ### Zakódování
+
+`examples/big.txt`
+
 
 ```
 12
 12
-1 4
-1 6
-1 7
-1 6
-1 1 5
-1 3 4
-6 3
-7 2
-8 1
-9 2 
+4 1
+6 1
+7 1
+6 1
+5 1 1
+4 3 1
+3 6
+2 7
+1 8
+2 9 
 12 
 12 
-1 5
-1 6
-1 7
-1 6
-1 1 5
-1 3 4
-1 4 3
-7 2
-8 1
-9 2
+5 1
+6 1
+7 1
+6 1
+5 1 1
+4 3 1
+3 4 1
+2 7
+1 8
+2 9
 12
 ```
