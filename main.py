@@ -11,7 +11,6 @@ def load_problem(filename: str) -> list:
 
         for i in range(2*n):
             problem[i] = list(map(int, file.readline().split()))
-            problem[i].reverse()
 
     return problem
 
@@ -64,18 +63,10 @@ def generate_cnf(dnf: list, n: int, start: int, row: bool) -> list:
     for i in range(m - 1, -1, -1):
         model_number[i] = model_into_number(dnf[i])
 
-    #print(model_number)
-
-    idx = 0
-
     with open("./output/cnf.txt", "a", encoding="utf-8") as file:
         for i in range(1<<n):
-            if i in model_number:
-                #print(i)
-                continue
-
-            #cnf.append(number_into_model(i, n))
-            file.write(dimacs_cnf(number_into_model(i, n), n, start, row) + " 0 \n")
+            if not i in model_number:
+                file.write(dimacs_cnf(number_into_model(i, n), n, start, row) + " 0 \n")
 
     return cnf
 
@@ -84,10 +75,7 @@ def encode_to_dnf_recur(params: list, idx: int, start: int, n: int, all_models: 
         all_models.append(list(active))
         return
 
-    if idx == len(params) - 1:
-        offset = -1
-    else:
-        offset = 0
+    offset = -1 if idx == len(params) - 1 else 0
 
     for i in range(start, n - params[idx] - offset):
         for j in range(i, i + params[idx]):
@@ -103,14 +91,13 @@ def encode(problem: list) -> None:
     n = len(problem) // 2
 
     all_models = []
-    complement = []
 
-    with open("./output/cnf.txt", "w", encoding="utf-8") as file:
-        #file.write(f"p cnf {n**2} \n")
+    with open("./output/cnf.txt", "w", encoding="utf-8") as _:
         pass
 
     for i in range(n * 2):
         all_models.clear()
+        
         encode_to_dnf_recur(problem[i], 0, 0, n, all_models, [False] * n)
 
         if i < n:
@@ -118,7 +105,11 @@ def encode(problem: list) -> None:
         else:
             cnf.append(generate_cnf(all_models, n, (i-n)*n, True))
 
-        #print(all_models)
+##############
+# DISCLAIMER #
+##############
+
+#Functions call_glucose and print_result were strongly inspired by sample solution, as was said that it is allowed.
 
 def call_glucose():
     return subprocess.run(["./glucose-simp", "-model", "./output/cnf.txt"], stdout=subprocess.PIPE)
@@ -135,11 +126,11 @@ def print_result(result, problem):
 
     model = []
     for line in result.stdout.decode('utf-8').split('\n'):
-        if line.startswith("v"):    # there might be more lines of the model, each starting with 'v'
+        if line.startswith("v"):   
             vars = line.split(" ")
             vars.remove("v")
             model.extend(int(v) for v in vars)      
-    model.remove(0) # 0 is the end of the model, just ignore it
+    model.remove(0) 
 
     for i in range(n):
         for j in range(n):
@@ -153,6 +144,7 @@ def main():
     problem = load_problem(sys.argv[1])
 
     encode(problem)
+
     result = call_glucose()
     print_result(result, problem)
 
