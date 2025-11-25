@@ -6,7 +6,7 @@ Script jde spustit z kořenového adresáře gitového repositáře pomocí př�
 
 Několik vzorových je možné najít v složce `examples`. 
 
-Pozn: připravená binárka pro SAT solver je kompilovaná pouze pro x86 architekturu. 
+Pozn: připravená binárka pro SAT solver je kompilovaná pouze pro Linux, x86 architekturu (pro jiné kombinace je potřeba si zkompilovat vlastní verzi Glucose). 
 
 # Zakódování problému
 
