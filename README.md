@@ -2,7 +2,7 @@
 
 # Jak spustit?
 
-Script jde spustit z kořenového adresáře gitového repositáře pomocí příkazu `python main.py [vstupní soubor]`, kde `[vstupní soubor]` představuje zakódovaný Nonogram problém dle popisu níže. 
+Script jde spustit z kořenového adresáře gitového repositáře pomocí příkazu `python main.py [vstupní soubor]`, kde `[vstupní soubor]` představuje cestu k souboru, kde je zakódovaný Nonogram problém dle popisu níže. 
 
 Několik vzorových je možné najít v složce `examples`. 
 
@@ -16,7 +16,7 @@ Každý Nonogram představuje čtvercovou matici, hrací plochu, $n \times n$. A
 
 Nechť tedy hrací plocha představuje matici $A$, potom prvek $a_{ij}$ musí splňovat charakteristiku $i$-tého řádku a $j$-tého sloupce. 
 
-Ukažme si příklad komentovaného zakódování na příkladu.
+Ukažme si příklad komentovaného zakódování na příkladu:
 
 ![Example](./src/small_nonogram.PNG)
 
@@ -41,7 +41,7 @@ Po informaci o rozměru přichází výčet informací nejdříve o sloupcích, 
 
 ## Zakódování do výrokové logiky
 
-Pro zakódování Nonogramu do výrokové logiky je nejpřímočařejší nejdříve zakódování do DNF a následný převod. Poněvadž charakteristiky řádků a sloupců nám toto zakódování rovnou poskytnou. 
+Pro zakódování Nonogramu do výrokové logiky je nejpřímočařejší nejdříve zakódování do DNF a následný převod. Poněvadž charakteristiky řádků a sloupců nám toto DNF zakódování rovnou poskytnou. 
 
 Tedy nechť je charakteristiky sloupce nebo řádku $3, 1$ a rozměry hrací plochy jsou $5 \times 5$, tedy charakteristika odpovídající 3. sloupci viz příklad výše. Tato charakteristika nám tedy říká, že v daném sloupci mu nastat, že začíná libovolným počtem neobarvených políček, klidně i nulový počet, následně mu nastat obarvená sekvence políček o velikosti 3, po této sekvenci musí pokračovat sekvence neobarvených políček, alespoň o velikosti 1 (abychom oddělily obarvené sekvence), následně obarvená sekvence o velikosti 1 a sloupec je ukončen libovolným počtem neobarvených políček, též může být o velikosti 0. A také musí platit, že součet velikostí těchto sekvencí je roven $5$. 
 
@@ -66,11 +66,11 @@ Jinak:
 
 Pro převod námi vygenerovaného DNF do CNF můžeme použít 2 přístupy. 
 
-První, najdeme všechny modly DNF a následně najdeme doplněk těchto modelů do modelu jazyka a z doplňku vytvoříme CNF. S tímto řešením je spojený problém, že pokud existuje pouze pár modelů, které by sloupec či řádek splňovali, tedy DNF je velmi malé, potom bude CNF téměř exponenciální k velikosti DNF. 
+První, najdeme všechny modly DNF a následně najdeme doplněk těchto modelů do modelu jazyka a z doplňku vytvoříme CNF. S tímto řešením je spojený problém, že pokud existuje pouze pár modelů, které by sloupec či řádek splňovali, tedy DNF je velmi malé, potom bude CNF bude exponenciální k velikosti DNF, či dokonce exponenciální vůči délce řádku (sloupce). 
 
-Druhým potenciálním řešením pro před do CNF je převod pomocí provádění ekvivalentních úprav, tedy spíše pomocí distribuce. Navzdory tomu, že by se mohlo zdát, že tento přístup bude výrazně obecně rychlejší a výhodnější než ten první, tak jsme při experimentaci narazil na to, že teoreticky komplexnější první případ běžel v podobném čase a za méně použité paměti, než druhý případ, tedy pomocí distribuce a ořezávání pomocí detekce tautologie ve formuli. 
+Druhým potenciálním řešením pro převod do CNF je převod pomocí provádění ekvivalentních úprav, tedy spíše pomocí distribuce. Navzdory tomu, že by se mohlo zdát, že tento přístup bude výrazně obecně rychlejší a výhodnější než ten první, tak jsme při experimentaci narazil na to, že teoreticky komplexnější první případ běžel v podobném čase a za méně použité paměti, než druhý případ, tedy pomocí distribuce a ořezávání pomocí detekce tautologie ve formuli. 
 
-Tedy ve finální implementaci jsem využil prvního případu s určitými optimalizacemi jako využití zakódování modelů do čísel atd. 
+Tedy ve finální implementaci jsem využil prvního případu s určitými optimalizacemi jako využití zakódování modelů do čísel nebo minimalizace potřeby uchovávat celé CNF v operační paměti. 
 
 Dalším aspektem je fakt, že celá hrací plocha má rozměry $n \times n$, ale vždy zpracováváme jednotlivé řádky či sloupce jednotlivě a následně je spojujeme. Tedy výše popsané případy běží v nejhorším případě v asymptoticky exponenciálním čase vůči velikosti řádku, $n$, a ne velikosti matice $n \times n$. 
 
