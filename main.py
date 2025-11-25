@@ -142,6 +142,10 @@ def print_result(result, problem, show_info):
         print("")
 
 def main():
+    if (len(sys.argv) == 1):
+        print("Chybí vstup")
+        return
+
     problem = load_problem(sys.argv[1])
 
     encode(problem)
