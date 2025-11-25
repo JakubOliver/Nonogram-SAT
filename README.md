@@ -2,7 +2,7 @@
 
 # Jak spustit?
 
-Script jde spustit z kořenového adresáře gitového repositáře pomocí příkazu `python main.py [vstupní soubor]`, kde `[vstupní soubor]` představuje cestu k souboru, kde je zakódovaný Nonogram problém dle popisu níže. 
+Script jde spustit z kořenového adresáře gitového repositáře pomocí příkazu `python main.py [vstupní soubor] [--info]`, kde `[vstupní soubor]` představuje cestu k souboru, kde je zakódovaný Nonogram problém dle popisu níže. A `[--info]` představuje flag, který určuje zda se zobrazí dodatečné informace o průběhu SAT solveru.
 
 Několik vzorových je možné najít v složce `examples`. 
 
