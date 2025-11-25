@@ -112,13 +112,14 @@ def encode(problem: list) -> None:
 #Functions call_glucose and print_result were strongly inspired by sample solution, as was said that it is allowed.
 
 def call_glucose():
-    return subprocess.run(["./glucose-simp", "-model", "./output/cnf.txt"], stdout=subprocess.PIPE)
+    return subprocess.run(["./glucose-simp", "-model", "./output/cnf.txt"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
 
-def print_result(result, problem):
+def print_result(result, problem, show_info):
     n = len(problem) // 2
 
-    for line in result.stdout.decode('utf-8').split("\n"):
-        print(line)
+    if show_info:
+        for line in result.stdout.decode('utf-8').split("\n"):
+            print(line)
 
     if (result.returncode == 20):
         print("NEMÁ ŘEŠENÍ")
@@ -146,7 +147,12 @@ def main():
     encode(problem)
 
     result = call_glucose()
-    print_result(result, problem)
+
+    show_info = False
+    if len(sys.argv) == 3 and sys.argv[2] == "--info":
+        show_info = True
+
+    print_result(result, problem, show_info)
 
 if __name__ == "__main__":
     main()
